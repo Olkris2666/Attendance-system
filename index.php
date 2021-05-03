@@ -1,7 +1,9 @@
 <?php include("DBconnect.php");
-$readMembers = $db->query(
-  "SELECT * FROM members"
-);
+// Creates roleID variable in advance to prevent error during query initialisation
+$roleID = 0;
+$readMembers = $db->query("SELECT * FROM members");
+$readRoleNames = $db->query("SELECT * FROM `event pattern`");
+// $getRoleName = $db->query("SELECT RoleName FROM `event pattern` WHERE `RoleID` = 2");
 ?>
 
 <br>
@@ -10,7 +12,19 @@ $readMembers = $db->query(
 <!-- Form to input new member info to add to DB -->
 <form method="post">
   <input type="text" placeholder="First and last name" name="names"></input>
-  <!-- <input type="dropdown" name="roleID"></input> -->
+  <select name="roleID">
+    <?php while(
+      // Fetches each line one by one
+      $currentRead = $readRoleNames->fetch()
+    ) { ?>
+      <!-- Creates an option for each line in DB -->
+      <option value="<?php
+        echo $currentRead['RoleID'];
+      ?>">
+        <?php echo $currentRead['RoleName']; ?>
+      </option>
+    <?php } ?>
+  </select>
   <input type="submit" value="Add to DB" name="submit"></input>
 </form>
 
@@ -34,18 +48,17 @@ $readMembers = $db->query(
   // Proceeds if submit button is pressed, and form data exists and is not null.  
   isset($_POST["submit"]) &&
   isset($_POST["names"]) && 
-  !empty($_POST["names"]) // &&
-  // isset($_POST["roleID"])
+  !empty($_POST["names"]) &&
+  isset($_POST["roleID"])
 ) {
   // Splits the names into their own variables
   $names = $_POST["names"];
   $splitNames = explode(" ", $names);
   $firstName = $splitNames[0];
   $lastName = $splitNames[1];
-
-  // placeholder variable for the RoleID
-  $roleID = 1;
-  $roleIDName = "placeholder role name";
+  $roleID = $_POST["roleID"];
+  // $SQL_Query = '$db->query("SELECT * FROM `event pattern` WHERE `RoleID` = \'$roleID\'");"';
+  $roleIDName = "temp"; // $getRoleName->fetch(); // $SQL_Query;
   $echoOutput = "\"$names\" as a \"$roleIDName\"";
 
   // Sends the form data to the database
