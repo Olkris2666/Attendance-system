@@ -47,7 +47,7 @@ $readRoleNames = $db->query("SELECT * FROM `event pattern`");
 <?php if(
   // Proceeds if submit button is pressed, and form data exists and is not null.  
   isset($_POST["submit"]) &&
-  isset($_POST["names"]) && 
+  isset($_POST["names"]) &&
   !empty($_POST["names"]) &&
   isset($_POST["roleID"])
 ) {
@@ -57,9 +57,12 @@ $readRoleNames = $db->query("SELECT * FROM `event pattern`");
   $firstName = $splitNames[0];
   $lastName = $splitNames[1];
   $roleID = $_POST["roleID"];
-  // $SQL_Query = '$db->query("SELECT * FROM `event pattern` WHERE `RoleID` = \'$roleID\'");"';
-  $roleIDName = "temp"; // $getRoleName->fetch(); // $SQL_Query;
-  $echoOutput = "\"$names\" as a \"$roleIDName\"";
+  // This here was a dousy
+  $getRoleName = $db->query(
+    "SELECT * FROM `event pattern` WHERE `RoleID` = '$roleID'"
+  );
+  $roleIDName = $getRoleName->fetch();
+  $echoOutput = "\"$names\" as a \"$roleIDName[1]\"";
 
   // Sends the form data to the database
   $insertion = $db->prepare(
